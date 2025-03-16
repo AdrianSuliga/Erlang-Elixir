@@ -6,9 +6,9 @@
 
 number_of_readings([], _) -> 0;
 number_of_readings([H | T], Date) ->
-  {Sample_data, _} = erlang:element(2, H),
+  {Sample_date, _} = erlang:element(2, H),
   Cnt =
-    if Sample_data == Date -> length(erlang:element(3, H));
+    if Sample_date == Date -> length(erlang:element(3, H));
       true -> 0
     end,
   Cnt + number_of_readings(T, Date).
@@ -18,6 +18,21 @@ calculate_max([H | T], Type) ->
   Head_max = get_max_from_one_reading(erlang:element(3, H), Type),
   Tail_max = calculate_max(T, Type),
   case {Head_max, Tail_max} of
+    {none, none} -> none;
+    {none, TMax} -> TMax;
+    {HMax, none} -> HMax;
+    {HMax, TMax} -> erlang:max(HMax, TMax)
+  end.
+
+get_max_from_one_reading([], _) -> none;
+get_max_from_one_reading([H | T], Type) ->
+  Head_value =
+    if
+      Type == erlang:element(1, H) -> erlang:element(2, H);
+      true -> none
+    end,
+  Tail_value = get_max_from_one_reading(T, Type),
+  case {Head_value, Tail_value} of
     {none, none} -> none;
     {none, TMax} -> TMax;
     {HMax, none} -> HMax;
@@ -44,10 +59,6 @@ get_sum([H | T], Type) ->
     {Hs, Ts} -> Hs + Ts
   end.
 
-get_readings_count([], _) -> 0;
-get_readings_count([H | T], Type) ->
-  get_count_from_one_reading(erlang:element(3, H), Type) + get_readings_count(T, Type).
-
 get_sum_from_one_reading([], _) -> none;
 get_sum_from_one_reading([H | T], Type) ->
   Head_value =
@@ -63,6 +74,10 @@ get_sum_from_one_reading([H | T], Type) ->
     {Hv, Tv} -> Hv + Tv
   end.
 
+get_readings_count([], _) -> 0;
+get_readings_count([H | T], Type) ->
+  get_count_from_one_reading(erlang:element(3, H), Type) + get_readings_count(T, Type).
+
 get_count_from_one_reading([], _) -> 0;
 get_count_from_one_reading([H | T], Type) ->
   Head_value =
@@ -72,21 +87,6 @@ get_count_from_one_reading([H | T], Type) ->
     end,
   Tail_value = get_count_from_one_reading(T, Type),
   Head_value + Tail_value.
-
-get_max_from_one_reading([], _) -> none;
-get_max_from_one_reading([H | T], Type) ->
-  Head_value =
-    if
-      Type == erlang:element(1, H) -> erlang:element(2, H);
-      true -> none
-    end,
-  Tail_value = get_max_from_one_reading(T, Type),
-  case {Head_value, Tail_value} of
-    {none, none} -> none;
-    {none, TMax} -> TMax;
-    {HMax, none} -> HMax;
-    {HMax, TMax} -> erlang:max(HMax, TMax)
-  end.
 
 generic_data() -> [
   {
