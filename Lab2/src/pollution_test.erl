@@ -219,5 +219,5 @@ get_maximum_variation_station_test() ->
   M9 = pollution:add_value("Stacja 3", {{2023,3,27},{11,16,18}}, "PM10", 1234, M8),
   M10 = pollution:add_value("Stacja 2", {{2022,3,22}, {11,11,11}}, "PM25", 250, M9),
 
-  ?assertMatch(2980, pollution:get_maximum_variation_station("PM10", M9)),
-  ?assertMatch(30, pollution:get_maximum_variation_station("PM25", M10)).
+  ?assertMatch({"Stacja 2", {2,2}, 2980}, pollution:get_maximum_variation_station("PM10", M9)),
+  ?assertMatch({"Stacja 2", {2,2}, 30}, pollution:get_maximum_variation_station("PM25", M10)).

@@ -5,8 +5,6 @@
 -export([create_monitor/0, add_station/3, add_value/5, remove_value/4,
   get_one_value/4, get_station_min/3, get_daily_mean/3, get_maximum_variation_station/2]).
 
-% Monitor:
-% [ { "ST", {1, 1}, [{ {{2022,12,12}, {13,21,21}}, "A", 1 }, { {{2023,12,1}, {9,32,1}}, "B", 2}] }, ... ]
 create_monitor() -> [].
 
 add_station(Name, Coordinates, Monitor) ->
@@ -96,7 +94,9 @@ get_daily_mean(Type, Date, Monitor) ->
 get_maximum_variation_station(Type, Monitor) ->
   Result = lists:map(fun(StationData) -> get_variation_from_station(StationData, Type) end, Monitor),
   MaxVariation = lists:max([Variation || {_, _, Variation} <- Result]),
-  [Station || {_, _, Variation} = Station <- Result, Variation == MaxVariation].
+  ListOfMaxVars = [{Name, Coords, Variation} || {Name, Coords, Variation} <- Result, Variation == MaxVariation],
+  [OneOfMaxVarStations] =  ListOfMaxVars,
+  OneOfMaxVarStations.
 
 get_variation_from_station({Name, Coords, Readings}, Type) ->
   ConsideredReadings = lists:filter(fun({_, T, _}) -> T == Type end, Readings),
