@@ -14,7 +14,7 @@
 
 -export([add_station/2, add_value/4, remove_value/3, get_one_value/3,
   get_station_min/2, get_daily_mean/2, get_maximum_variation_station/1,
-  crash/0]).
+  crash/0, stop/0]).
 
 -define(SERVER, ?MODULE).
 
@@ -110,3 +110,6 @@ remove_value(Identifier, Date, Type) ->
 
 crash() ->
   1 / 0.
+
+stop() ->
+  gen_server:stop(?SERVER).
